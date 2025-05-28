@@ -1,0 +1,66 @@
+table dim_vehiculo
+	lineageTag: 80bda3d6-4cb7-4359-8aee-e8cafd4e9ea7
+
+	measure TotalVentasModelo =
+			
+			CALCULATE(
+			    COUNTROWS(Fact_Ventas),
+			    CROSSFILTER(Fact_Ventas[Vehiculo], dim_vehiculo[id_vehiculo], BOTH)
+			)
+		formatString: 0
+		lineageTag: 1054e173-7ad0-4a00-bbd2-00581166b532
+
+	column id_vehiculo
+		dataType: int64
+		formatString: 0
+		lineageTag: e0057c4a-28ce-4739-86d1-0107cd2164a6
+		summarizeBy: none
+		sourceColumn: id_vehiculo
+
+		annotation SummarizationSetBy = Automatic
+
+	column marca_vehiculo
+		dataType: string
+		lineageTag: 87cb20aa-7b67-4f9d-9c59-87777ad911e5
+		summarizeBy: none
+		sourceColumn: marca_vehiculo
+
+		annotation SummarizationSetBy = Automatic
+
+	column modelo_vehiculo
+		dataType: string
+		lineageTag: 077d24c5-c2e9-41c8-ba9a-9db3bf8ad835
+		summarizeBy: none
+		sourceColumn: modelo_vehiculo
+
+		annotation SummarizationSetBy = Automatic
+
+	column tipo_vehiculo
+		dataType: string
+		lineageTag: 77e5782b-b977-4868-a55d-7dcd0bf2a97f
+		summarizeBy: none
+		sourceColumn: tipo_vehiculo
+
+		annotation SummarizationSetBy = Automatic
+
+	column año_vehiculo
+		dataType: int64
+		formatString: 0
+		lineageTag: 7537365f-1fdf-47cc-b175-4679824e1a60
+		summarizeBy: none
+		sourceColumn: año_vehiculo
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_vehiculo = m
+		mode: import
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("C:\Users\isira\Downloads\VentasVehiculos.xlsx"), null, true),
+				    dim_vehiculo_Table = Origen{[Item="dim_vehiculo",Kind="Table"]}[Data],
+				    #"Tipo cambiado" = Table.TransformColumnTypes(dim_vehiculo_Table,{{"id_vehiculo", Int64.Type}, {"marca_vehiculo", type text}, {"modelo_vehiculo", type text}, {"tipo_vehiculo", type text}, {"año_vehiculo", Int64.Type}})
+				in
+				    #"Tipo cambiado"
+
+	annotation PBI_ResultType = Table
+

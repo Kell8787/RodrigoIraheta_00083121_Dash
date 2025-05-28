@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "RodrigoIrahtea_00083121"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "76c3fa67-1e87-4890-a465-e15a14e8d7b7"
+  }
+}

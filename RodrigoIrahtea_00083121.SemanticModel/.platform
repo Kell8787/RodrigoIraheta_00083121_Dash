@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "RodrigoIrahtea_00083121"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "be871309-c9b0-4c37-a91c-664d7515d7b5"
+  }
+}

@@ -1,0 +1,161 @@
+table Fact_Ventas
+	lineageTag: 98a5bae1-e4bc-4af4-941b-b7441d97b939
+
+	measure PrecioTotal = SUMX(Fact_Ventas, Fact_Ventas[Precio Venta sin IGV] + Fact_Ventas[IGV])
+		lineageTag: 35649148-ea18-4197-bb77-bbaaf4dce3fe
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure IngresosTotales = SUMX( Fact_Ventas, (Fact_Ventas[PrecioTotal] - Fact_Ventas[Costo Vehículo]))
+		lineageTag: f1fe3f04-d0b6-477f-9e60-d1b890f3b3bc
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TotalModelos = COUNTROWS(Fact_Ventas)
+		formatString: 0
+		lineageTag: c5df9499-16f6-4772-91a5-47270f0ea880
+
+	measure PrecioPromedioPorVenta =
+			AVERAGEX(
+			    Fact_Ventas,
+			    Fact_Ventas[Precio Venta sin IGV] + Fact_Ventas[IGV]
+			)
+		lineageTag: 5017c4cd-0c1f-424d-a5c8-3fb7d1964c60
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Total = COUNT(Fact_Ventas[Cliente])
+		formatString: 0
+		lineageTag: ff28270c-b1d6-4fb6-b8c8-a16d006eca37
+
+	measure Promedio = AVERAGE(Fact_Ventas[PrecioTotalVentas])
+		lineageTag: 5570e97d-1f02-4ce8-9a24-4f9ac17426db
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TotalIngresos = SUMX(Fact_Ventas, (Fact_Ventas[PrecioPromedioPorVenta] - Fact_Ventas[Costo Vehículo]))
+		lineageTag: 9025000b-9d2d-449b-b844-616e8098eee4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ID
+		dataType: int64
+		formatString: 0
+		lineageTag: ac57ab17-5b3d-4820-8a39-d19806052d35
+		summarizeBy: count
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column datekey
+		dataType: int64
+		formatString: 0
+		lineageTag: e68d2d3a-473f-4b74-9e1d-0d65902abaa6
+		summarizeBy: none
+		sourceColumn: datekey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Canal
+		dataType: int64
+		formatString: 0
+		lineageTag: af2e14c7-2b81-452b-88cf-605dfcaa87f4
+		summarizeBy: none
+		sourceColumn: Canal
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente
+		dataType: int64
+		formatString: 0
+		lineageTag: ce30efb9-608a-4f61-b783-6d6bbeeb2d2d
+		summarizeBy: none
+		sourceColumn: Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segmento
+		dataType: string
+		lineageTag: bc45b4b2-1910-4d40-b00b-a402659d69f9
+		summarizeBy: none
+		sourceColumn: Segmento
+
+		annotation SummarizationSetBy = Automatic
+
+	column Vehiculo
+		dataType: int64
+		formatString: 0
+		lineageTag: 97ed2441-765e-45e3-bc66-fd0ba8ed43b6
+		summarizeBy: none
+		sourceColumn: Vehiculo
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Costo Vehículo'
+		dataType: double
+		lineageTag: 64895702-fb5d-4dd2-885a-76df14d1c14a
+		summarizeBy: sum
+		sourceColumn: Costo Vehículo
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Precio Venta sin IGV'
+		dataType: double
+		lineageTag: 294ac065-bf3a-4c70-83e6-c4eb437fe4d3
+		summarizeBy: sum
+		sourceColumn: Precio Venta sin IGV
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column IGV
+		dataType: double
+		lineageTag: d0600c9c-249e-4823-8a19-579d4c78d08b
+		summarizeBy: sum
+		sourceColumn: IGV
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Sede
+		dataType: int64
+		formatString: 0
+		lineageTag: 5264425b-ab2e-4248-ae22-219c8b3d4591
+		summarizeBy: none
+		sourceColumn: Sede
+
+		annotation SummarizationSetBy = Automatic
+
+	column Vendedor
+		dataType: int64
+		formatString: 0
+		lineageTag: 86caee16-938c-44b2-87f8-a15d867de115
+		summarizeBy: none
+		sourceColumn: Vendedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column PrecioTotalVentas = Fact_Ventas[Precio Venta sin IGV] + Fact_Ventas[IGV]*Fact_Ventas[Precio Venta sin IGV]
+		lineageTag: 32d7ccd1-391d-4645-a7d6-7d9be675cb26
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Fact_Ventas = m
+		mode: import
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("C:\Users\isira\Downloads\VentasVehiculos.xlsx"), null, true),
+				    Fact_Ventas_Table = Origen{[Item="Fact_Ventas",Kind="Table"]}[Data],
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Fact_Ventas_Table,{{"ID", Int64.Type}, {"datekey", Int64.Type}, {"Canal", Int64.Type}, {"Cliente", Int64.Type}, {"Segmento", type text}, {"Vehiculo", Int64.Type}, {"Costo Vehículo", type number}, {"Precio Venta sin IGV", type number}, {"IGV", type number}, {"Sede", Int64.Type}, {"Vendedor", Int64.Type}})
+				in
+				    #"Tipo cambiado"
+
+	annotation PBI_ResultType = Table
+
